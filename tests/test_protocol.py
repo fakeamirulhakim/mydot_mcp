@@ -126,3 +126,16 @@ def test_call_method_cannot_reenter_mcp():
 
 def test_unknown_method():
 	assert json.loads(call(rpc("resources/list")).get_data())["error"]["code"] == -32601
+
+
+def test_wellknown_discovery_documents():
+	from mydot_mcp.wellknown import OAuthDiscovery
+
+	assert not OAuthDiscovery("about").can_render()
+	pr = OAuthDiscovery("/.well-known/oauth-protected-resource")
+	assert pr.can_render()
+	assert json.loads(pr.render().get_data())["authorization_servers"] == ["https://go.example.com"]
+	meta = json.loads(OAuthDiscovery(".well-known/oauth-authorization-server").render().get_data())
+	assert meta["code_challenge_methods_supported"] == ["S256"]
+	assert "client_secret_basic" not in meta["token_endpoint_auth_methods_supported"]
+	assert meta["token_endpoint"].endswith("frappe.integrations.oauth2.get_token")
