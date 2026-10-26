@@ -118,13 +118,17 @@ def get_doctype_fields(doctype):
 
 @tool(
 	"list_documents",
-	"List documents of a DocType. Supports filters, chosen fields, ordering, paging and group_by "
-	'(e.g. fields ["status", "count(name) as n"] with group_by "status").',
+	"List documents of a DocType. Supports filters, chosen fields, ordering, paging and group_by. "
+	'Aggregates use dict fields, e.g. fields ["status", {"COUNT": "*", "as": "n"}] with group_by "status".',
 	{
 		"doctype": _DOCTYPE,
 		"filters": _FILTERS,
 		"or_filters": _FILTERS,
-		"fields": {"type": "array", "items": {"type": "string"}, "description": 'Default ["name"].'},
+		"fields": {
+			"type": "array",
+			"items": {"anyOf": [{"type": "string"}, {"type": "object"}]},
+			"description": 'Field names or aggregate dicts. Default ["name"].',
+		},
 		"order_by": {"type": "string", "description": 'e.g. "modified desc"'},
 		"group_by": {"type": "string"},
 		"limit": {"type": "integer", "default": 20, "maximum": 500},

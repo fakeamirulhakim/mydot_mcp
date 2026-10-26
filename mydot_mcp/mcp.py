@@ -115,6 +115,10 @@ def _call_tool(msg_id, params):
 	allowed = set(tool["inputSchema"]["properties"])
 	args = {k: v for k, v in args.items() if k in allowed}
 
+	# frappe.form_dict holds the JSON-RPC body ("id", "method", ...). Some
+	# frappe.client helpers read form_dict, so give each tool a clean one.
+	frappe.local.form_dict = frappe._dict()
+
 	try:
 		data = tool["fn"](**args)
 	except Exception as e:
