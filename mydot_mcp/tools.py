@@ -119,7 +119,8 @@ def get_doctype_fields(doctype):
 @tool(
 	"list_documents",
 	"List documents of a DocType. Supports filters, chosen fields, ordering, paging and group_by. "
-	'Aggregates use dict fields, e.g. fields ["status", {"COUNT": "*", "as": "n"}] with group_by "status".',
+	'Aggregates: on Frappe v16 use dict fields, e.g. ["status", {"COUNT": "*", "as": "n"}]; '
+	'on v15 use strings, e.g. ["status", "count(name) as n"]. Use with group_by "status".',
 	{
 		"doctype": _DOCTYPE,
 		"filters": _FILTERS,
