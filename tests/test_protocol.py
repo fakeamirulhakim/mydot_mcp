@@ -27,6 +27,8 @@ frappe.PermissionError = PermissionError
 frappe.whitelist = lambda **kw: (lambda fn: fn)
 frappe.db = types.SimpleNamespace(rollback=lambda: frappe.calls.append("rollback"))
 frappe.clear_messages = lambda: None
+frappe._dict = dict
+frappe.local = types.SimpleNamespace(form_dict={"id": 1, "method": "tools/call"})
 frappe.as_json = lambda obj, indent=None: json.dumps(obj, default=str)
 frappe.get_roles = lambda user=None: ["System Manager"]
 frappe.utils = types.SimpleNamespace(
@@ -38,6 +40,7 @@ client = types.ModuleType("frappe.client")
 
 
 def _get(doctype, name):
+	assert frappe.local.form_dict == {}, "JSON-RPC body leaked into form_dict"
 	if name == "SECRET":
 		raise PermissionError("Not permitted")
 	return {"doctype": doctype, "name": name, "grand_total": 10}
